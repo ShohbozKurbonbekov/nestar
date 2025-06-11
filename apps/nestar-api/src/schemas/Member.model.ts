@@ -12,7 +12,7 @@ const MemberSchema = new Schema(
 			enum: MemberStatus,
 			default: MemberStatus.ACTIVE,
 		},
-		MemberAuthType: {
+		memberAuthType: {
 			type: String,
 			enum: MemberAuthType,
 			default: MemberAuthType.PHONE,
@@ -70,6 +70,10 @@ const MemberSchema = new Schema(
 			default: 0,
 		},
 		memberViews: {
+			type: Number,
+			default: 0,
+		},
+		memberLikes: {
 			type: Number,
 			default: 0,
 		},
