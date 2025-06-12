@@ -19,8 +19,8 @@ export class MemberService {
 
 			return result;
 		} catch (error) {
-			console.log('Error in signup service model: ', error);
-			throw new BadRequestException(error);
+			console.log('Error in signup service model: ', error.message);
+			throw new BadRequestException(Message.USED_MEMBER_NICK_OR_PHONE);
 		}
 	}
 	public async login(input: LoginInput): Promise<Member> {
