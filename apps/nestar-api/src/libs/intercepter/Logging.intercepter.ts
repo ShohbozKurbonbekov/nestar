@@ -17,17 +17,17 @@ export class LoggingIntercepter implements NestInterceptor {
 			const gqlContext = GqlExecutionContext.create(context);
 
 			this.logger.log(`${this.stringify(gqlContext.getContext().req.body)}`, 'Request');
+
+			// (2) Errors handling via Graphql
+
+			//(3) No Errors, giving response
+			return next.handle().pipe(
+				tap((contex) => {
+					const responseTime = Date.now() - recordTime;
+					this.logger.log(`${this.stringify(contex)} - ${responseTime}ms \n\n`, 'Response');
+				}),
+			);
 		}
-
-		// (2) Errors handling via Graphql
-
-		//(3) No Errors, giving response
-		return next.handle().pipe(
-			tap((contex) => {
-				const responseTime = Date.now() - recordTime;
-				this.logger.log(`${this.stringify(contex)} - ${responseTime}ms \n\n`, 'Response');
-			}),
-		);
 	}
 
 	private stringify(contex: ExecutionContext): string {
