@@ -17,11 +17,11 @@ export class MemberService {
 	public async signup(input: MemberInput): Promise<Member> {
 		try {
 			input.memberPassword = await this.AuthService.hashPassword(input.memberPassword);
-			// HASH Password
 
 			const result = await this.memberModel.create(input);
 
 			// Authentication via tokens
+			result.accessToken = await this.AuthService.createToken(result);
 
 			return result;
 		} catch (error) {
@@ -51,6 +51,7 @@ export class MemberService {
 			throw new InternalServerErrorException(Message.WRONG_PASSWORD);
 		}
 
+		response.accessToken = await this.AuthService.createToken(response);
 		return response;
 	}
 
