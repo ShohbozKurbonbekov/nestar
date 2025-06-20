@@ -4,3 +4,5 @@ export const shapeIntoMongoObjectId = (target: any) => {
 };
 
 export const availableAgentSort = ['created', 'updatedAt', 'memberLikes', 'memberViews', 'memberRank'];
+
+export const availableMemberSort = ['created', 'updatedAt', 'memberLikes', 'memberViews'];
