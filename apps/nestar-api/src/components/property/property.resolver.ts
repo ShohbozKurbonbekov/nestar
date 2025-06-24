@@ -18,6 +18,7 @@ import { shapeIntoMongoObjectId } from '../../libs/config';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { PropertyUpdate } from '../../libs/dto/property/property.update';
 import { throttleTime } from 'rxjs';
+import { PropertyType } from '../../libs/enums/property.enum';
 
 @Resolver()
 export class PropertyResolver {
@@ -97,5 +98,15 @@ export class PropertyResolver {
 		console.log('Mutation: updatePropertyByAdmin');
 		input._id = shapeIntoMongoObjectId(input._id);
 		return await this.propertyService.updatePropertyByAdmin(input);
+	}
+
+	@Roles(MemberType.ADMIN)
+	@UseGuards(RolesGuard)
+	@Mutation(() => Property)
+	public async removePropertyByAdmin(@Args('propertyId') input: string): Promise<Property> {
+		console.log('Mutation removrePropertyByAdmin');
+		const propertyId = shapeIntoMongoObjectId(input);
+
+		return await this.propertyService.removePropertyByAdmin(propertyId);
 	}
 }
