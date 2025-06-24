@@ -17,6 +17,7 @@ import { WithoutGuard } from '../auth/guards/without.guard';
 import { shapeIntoMongoObjectId } from '../../libs/config';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { PropertyUpdate } from '../../libs/dto/property/property.update';
+import { throttleTime } from 'rxjs';
 
 @Resolver()
 export class PropertyResolver {
@@ -87,5 +88,14 @@ export class PropertyResolver {
 	): Promise<Properties> {
 		console.log('Query: getAllPropertiesByAdmin');
 		return await this.propertyService.getAllPropertiesByAdmin(input);
+	}
+
+	@Roles(MemberType.ADMIN)
+	@UseGuards(RolesGuard)
+	@Mutation(() => Property)
+	public async updatePropertyByAdmin(@Args('input') input: PropertyUpdate): Promise<Property> {
+		console.log('Mutation: updatePropertyByAdmin');
+		input._id = shapeIntoMongoObjectId(input._id);
+		return await this.propertyService.updatePropertyByAdmin(input);
 	}
 }
