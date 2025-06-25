@@ -142,7 +142,7 @@ class PISearch {
 }
 
 @InputType()
-export class PropertyInquiry {
+export class PropertiesInquiry {
 	@IsNotEmpty()
 	@Min(1)
 	@Field(() => Int)

@@ -6,7 +6,7 @@ import {
 	AgentPropertiesInquiry,
 	AllPropertiesInquiry,
 	PropertyInput,
-	PropertyInquiry,
+	PropertiesInquiry,
 } from '../../libs/dto/property/property.input';
 import { Properties, Property } from '../../libs/dto/property/property';
 import { Direction, Message } from '../../libs/enums/common.enum';
@@ -98,7 +98,7 @@ export class PropertyService {
 		return result;
 	}
 
-	public async getProperties(memberId: ObjectId, input: PropertyInquiry): Promise<Properties> {
+	public async getProperties(memberId: ObjectId, input: PropertiesInquiry): Promise<Properties> {
 		const match: T = {
 			propertyStatus: PropertyStatus.ACTIVE,
 		};
