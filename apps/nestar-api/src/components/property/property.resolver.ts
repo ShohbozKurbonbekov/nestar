@@ -58,7 +58,6 @@ export class PropertyResolver {
 		console.log('Mutation: UpdateProperty');
 		input._id = shapeIntoMongoObjectId(input._id);
 		return this.propertyService.updateProperty(memberId, input);
-		return;
 	}
 
 	@UseGuards(WithoutGuard)
