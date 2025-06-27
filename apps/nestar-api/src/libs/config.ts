@@ -34,3 +34,5 @@ export const lookupMember = {
 		as: 'memberData',
 	},
 };
+
+export const availableBoardArticleSorts = ['createdAt', 'updatedAt', 'articleLikes', 'articleViews'];
