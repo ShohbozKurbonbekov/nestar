@@ -9,7 +9,7 @@ import { AuthService } from '../auth/auth.service';
 import { Args, Mutation } from '@nestjs/graphql';
 import { MemberUpdate } from '../../libs/dto/member.update';
 import { StatisticModifiler, T } from '../../libs/types/common';
-import { internalExecuteOperation } from '@apollo/server/dist/esm/ApolloServer';
+
 import { ViewService } from '../view/view.service';
 import { ViewGroup } from '../../libs/enums/view.enum';
 
@@ -174,6 +174,6 @@ export class MemberService {
 		console.log('MemberStatusEditor executed');
 		const { _id, targetKey, modifier } = input;
 
-		return await this.memberModel.findOneAndUpdate({ _id }, { $inc: { [targetKey]: modifier } }, { new: true }).exec();
+		return await this.memberModel.findByIdAndUpdate(_id, { $inc: { [targetKey]: modifier } }, { new: true }).exec();
 	}
 }
