@@ -20,6 +20,9 @@ import { MemberType } from '../../libs/enums/member.enum';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Args } from '@nestjs/graphql';
 import { AuthMember } from '../auth/decorators/authMember.decorator';
+import { LikeInput } from '../../libs/dto/like/like.input';
+import { LikeGroup } from '../../libs/enums/like.enum';
+import { LikeService } from '../like/like.service';
 
 @Injectable()
 export class BoardArticleService {
@@ -27,6 +30,7 @@ export class BoardArticleService {
 		@InjectModel('BoardArticle') private readonly boardArticleModel: Model<BoardArticle>,
 		private readonly memberService: MemberService,
 		private readonly viewService: ViewService,
+		private readonly likeService: LikeService,
 	) {}
 
 	public async createBoardArticle(memberId: ObjectId, input: BoardArticleInput): Promise<BoardArticle> {
@@ -80,21 +84,6 @@ export class BoardArticleService {
 		targetBoardArticle.memberData = await this.memberService.getMember(null, targetBoardArticle.memberId);
 
 		return targetBoardArticle;
-	}
-
-	public async boardArticleStatsEditor(input: StatisticModifiler): Promise<BoardArticle> {
-		const { _id, targetKey, modifier } = input;
-		return await this.boardArticleModel
-			.findByIdAndUpdate(
-				_id,
-				{
-					$inc: { [targetKey]: modifier },
-				},
-				{
-					new: true,
-				},
-			)
-			.exec();
 	}
 
 	public async updateBoardArticle(memberId: ObjectId, input: BoardArticleUpdate): Promise<BoardArticle> {
@@ -235,5 +224,48 @@ export class BoardArticleService {
 			throw new InternalServerErrorException(Message.REMOVE_FAILED);
 		}
 		return result;
+	}
+
+	public async likeTargetBoardArticle(memberId: ObjectId, likeRefId: ObjectId): Promise<BoardArticle> {
+		const target: BoardArticle = await this.boardArticleModel
+			.findOne({
+				_id: likeRefId,
+				articleStatus: BoardArticleStatus.ACTIVE,
+			})
+			.exec();
+
+		if (!target) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+
+		const input: LikeInput = {
+			memberId: memberId,
+			likeRefId: likeRefId,
+			likeGroup: LikeGroup.ARTICLE,
+		};
+
+		const modifier: number = await this.likeService.toggleLike(input);
+		const result = await this.boardArticleStatsEditor({
+			_id: likeRefId,
+			targetKey: 'articleLikes',
+			modifier: modifier,
+		});
+
+		if (!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
+
+		return result;
+	}
+
+	public async boardArticleStatsEditor(input: StatisticModifiler): Promise<BoardArticle> {
+		const { _id, targetKey, modifier } = input;
+		return await this.boardArticleModel
+			.findByIdAndUpdate(
+				_id,
+				{
+					$inc: { [targetKey]: modifier },
+				},
+				{
+					new: true,
+				},
+			)
+			.exec();
 	}
 }
