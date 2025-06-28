@@ -115,6 +115,13 @@ export class CommentService {
 
 		return result[0];
 	}
+
+	public async removeCommentByAdmin(memberId: ObjectId, input: ObjectId): Promise<Comment> {
+		const result = await this.commentModel.findByIdAndDelete(input).exec();
+
+		if (!result) throw new InternalServerErrorException(Message.REMOVE_FAILED);
+		return result;
+	}
 }
 
 // 1. one misunderstand with createComment code block, the final result handling part is reduntand, coz we handled above with try {}catch() blocks
