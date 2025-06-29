@@ -38,3 +38,21 @@ export const lookupMember = {
 export const availableBoardArticleSorts = ['createdAt', 'updatedAt', 'articleLikes', 'articleViews'];
 
 export const availableCommentSorts = ['createdAt', 'updatedAt'];
+
+export const lookupFollowerData = {
+	$lookup: {
+		from: 'members',
+		localField: 'followerId',
+		foreignField: '_id',
+		as: 'followerData',
+	},
+};
+
+export const lookupFollowingData = {
+	$lookup: {
+		from: 'members',
+		localField: 'followingId',
+		foreignField: '_id',
+		as: 'followingData',
+	},
+};

@@ -7,7 +7,7 @@ export class AuthGuard implements CanActivate {
 	constructor(private authService: AuthService) {}
 
 	async canActivate(context: ExecutionContext | any): Promise<boolean> {
-		console.info('--- @guard() Authentication [AuthGuard] ---');
+		console.info('--- @guard() Authentication [AuthGuard] ---', context);
 
 		if (context.contextType === 'graphql') {
 			const request = context.getArgByIndex(2).req;
@@ -20,6 +20,7 @@ export class AuthGuard implements CanActivate {
 			if (!authMember) throw new UnauthorizedException(Message.NOT_AUTHENTICATED);
 
 			console.log('memberNick[auth] =>', authMember.memberNick);
+
 			request.body.authMember = authMember;
 
 			return true;
