@@ -8,7 +8,7 @@ import { Member } from '../../libs/dto/member/member';
 import { MESSAGES } from '@nestjs/core/constants';
 import { FollowInquiry } from '../../libs/dto/follow/follow.input';
 import { T } from '../../libs/types/common';
-import { lookupFollowerData, lookupFollowingData } from '../../libs/config';
+import { lookupAuthMemberLiked, lookupFollowerData, lookupFollowingData } from '../../libs/config';
 
 @Injectable()
 export class FollowService {
@@ -98,10 +98,11 @@ export class FollowService {
 				{
 					$facet: {
 						list: [
-							{ $skip: (page - 1) * 1 },
+							{ $skip: (page - 1) * limit },
 							{
 								$limit: limit,
 							},
+							lookupAuthMemberLiked(memberId, '$followingId'),
 
 							lookupFollowingData,
 							{ $unwind: '$followingData' },
@@ -120,7 +121,7 @@ export class FollowService {
 		return result[0];
 	}
 
-	public async getMemberFollowers(meberId: ObjectId | null, input: FollowInquiry): Promise<Followers> {
+	public async getMemberFollowers(memberId: ObjectId | null, input: FollowInquiry): Promise<Followers> {
 		const { page, limit, search } = input;
 		if (!search?.followingId) throw new InternalServerErrorException(Message.BAD_REQUEST);
 
@@ -147,6 +148,7 @@ export class FollowService {
 							{
 								$limit: limit,
 							},
+							lookupAuthMemberLiked(memberId, '$followerId'),
 							lookupFollowerData,
 							{ $unwind: '$followerData' },
 						],

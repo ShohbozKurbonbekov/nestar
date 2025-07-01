@@ -49,6 +49,7 @@ export class BoardArticle {
 
 	@Field(() => [MeLiked], { nullable: true })
 	meLiked?: MeLiked[];
+	PropertiesInquiry: MeLiked[];
 }
 
 @ObjectType()

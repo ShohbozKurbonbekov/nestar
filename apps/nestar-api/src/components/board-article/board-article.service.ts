@@ -15,7 +15,7 @@ import { ViewService } from '../view/view.service';
 import { StatisticModifiler, T } from '../../libs/types/common';
 import { BoardArticleStatus } from '../../libs/enums/board-article.enum';
 import { BoardArticleUpdate } from '../../libs/dto/board-article/board-article.update';
-import { lookupMember, shapeIntoMongoObjectId } from '../../libs/config';
+import { lookupAuthMemberLiked, lookupMember, shapeIntoMongoObjectId } from '../../libs/config';
 import { MemberType } from '../../libs/enums/member.enum';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Args } from '@nestjs/graphql';
@@ -142,6 +142,7 @@ export class BoardArticleService {
 							{
 								$limit: input.limit,
 							},
+							lookupAuthMemberLiked(memberId),
 							lookupMember,
 							{
 								$unwind: '$memberData',
