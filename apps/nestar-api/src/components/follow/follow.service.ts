@@ -8,7 +8,12 @@ import { Member } from '../../libs/dto/member/member';
 import { MESSAGES } from '@nestjs/core/constants';
 import { FollowInquiry } from '../../libs/dto/follow/follow.input';
 import { T } from '../../libs/types/common';
-import { lookupAuthMemberLiked, lookupFollowerData, lookupFollowingData } from '../../libs/config';
+import {
+	lookupAuthMemberFollowed,
+	lookupAuthMemberLiked,
+	lookupFollowerData,
+	lookupFollowingData,
+} from '../../libs/config';
 
 @Injectable()
 export class FollowService {
@@ -103,6 +108,10 @@ export class FollowService {
 								$limit: limit,
 							},
 							lookupAuthMemberLiked(memberId, '$followingId'),
+							lookupAuthMemberFollowed({
+								followerId: memberId,
+								followingId: '$followingId',
+							}),
 
 							lookupFollowingData,
 							{ $unwind: '$followingData' },
@@ -149,6 +158,11 @@ export class FollowService {
 								$limit: limit,
 							},
 							lookupAuthMemberLiked(memberId, '$followerId'),
+							lookupAuthMemberFollowed({
+								followerId: memberId,
+								followingId: '$followingId',
+							}),
+
 							lookupFollowerData,
 							{ $unwind: '$followerData' },
 						],

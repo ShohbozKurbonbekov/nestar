@@ -10,6 +10,7 @@ export const availableMemberSort = ['created', 'updatedAt', 'memberLikes', 'memb
 import { v4 as uuidv4 } from 'uuid';
 import * as path from 'path';
 import { T } from './types/common';
+import { pipeline } from 'stream';
 
 export const validMimeTypes = ['image/png', 'image/jpg', 'image/jpeg'];
 export const getSerialForImage = (filename: string) => {
@@ -86,6 +87,50 @@ export const lookupAuthMemberLiked = (memberId: T, targetRefId: string = '$_id')
 				},
 			],
 			as: 'meLiked',
+		},
+	};
+};
+
+interface LookupAuthMemberFollowed {
+	followerId: T;
+	followingId: string;
+}
+
+export const lookupAuthMemberFollowed = (input: LookupAuthMemberFollowed) => {
+	const { followerId, followingId } = input;
+	return {
+		$lookup: {
+			from: 'follows',
+			let: {
+				localFollowerId: followerId,
+				localFollowingId: followingId,
+				localMyFollowing: true,
+			},
+			pipeline: [
+				{
+					$match: {
+						$expr: {
+							$and: [
+								{
+									$eq: ['$followerId', '$$localFollowerId'],
+								},
+								{
+									$eq: ['$followingId', '$$localFollowingId'],
+								},
+							],
+						},
+					},
+				},
+				{
+					$project: {
+						_id: 0,
+						followerId: 1,
+						followingId: 1,
+						myFollowing: '$$localMyFollowing',
+					},
+				},
+			],
+			as: 'meFollowed',
 		},
 	};
 };
