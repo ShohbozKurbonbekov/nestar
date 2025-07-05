@@ -7,7 +7,7 @@ export class AuthGuard implements CanActivate {
 	constructor(private authService: AuthService) {}
 
 	async canActivate(context: ExecutionContext | any): Promise<boolean> {
-		console.info('--- @guard() Authentication [AuthGuard] ---', context);
+		console.info('--- @guard() Authentication [AuthGuard] ---');
 
 		if (context.contextType === 'graphql') {
 			const request = context.getArgByIndex(2).req;

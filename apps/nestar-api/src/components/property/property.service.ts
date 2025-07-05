@@ -321,6 +321,10 @@ export class PropertyService {
 		return await this.likeService.getFavoriteProperties(memberId, input);
 	}
 
+	public async getVisited(memberId: ObjectId, input: OrdinaryInquery): Promise<Properties> {
+		return await this.viewService.getVisitedProperties(memberId, input);
+	}
+
 	public async propertyStatsEditor(input: StatisticModifiler): Promise<Property> {
 		const { _id, targetKey, modifier } = input;
 		return await this.propertyModel.findByIdAndUpdate(_id, { $inc: { [targetKey]: modifier } }, { new: true }).exec();

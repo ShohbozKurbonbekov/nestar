@@ -100,6 +100,16 @@ export class PropertyResolver {
 		return await this.propertyService.getFavorites(memberId, input);
 	}
 
+	@UseGuards(AuthGuard)
+	@Query(() => Properties)
+	public async getVisited(
+		@Args('input') input: OrdinaryInquery,
+		@AuthMember('_id') memberId: ObjectId,
+	): Promise<Properties> {
+		console.log('Query: getVisited');
+		return await this.propertyService.getVisited(memberId, input);
+	}
+
 	// ADMIN
 	@Roles(MemberType.ADMIN)
 	@UseGuards(RolesGuard)

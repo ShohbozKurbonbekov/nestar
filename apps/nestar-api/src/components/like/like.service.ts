@@ -8,7 +8,6 @@ import { Message } from '../../libs/enums/common.enum';
 import { OrdinaryInquery } from '../../libs/dto/property/property.input';
 import { Properties } from '../../libs/dto/property/property';
 import { LikeGroup } from '../../libs/enums/like.enum';
-import { lookup } from 'dns';
 import { lookupFavorite } from '../../libs/config';
 
 @Injectable()
@@ -101,10 +100,8 @@ export class LikeService {
 			])
 			.exec();
 
-		// console.log('data :', data);
 		const result: Properties = { list: [], metaCounter: data[0].metaCounter };
 		result.list = data[0].list.map((el) => el.favoriteProperty);
-		console.log('result: ', result);
 		return result;
 	}
 }
