@@ -7,6 +7,7 @@ import {
 	AllPropertiesInquiry,
 	PropertyInput,
 	PropertiesInquiry,
+	OrdinaryInquery,
 } from '../../libs/dto/property/property.input';
 import { Properties, Property } from '../../libs/dto/property/property';
 import { Direction, Message } from '../../libs/enums/common.enum';
@@ -314,6 +315,10 @@ export class PropertyService {
 		if (!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
 
 		return result;
+	}
+
+	public async getFavorites(memberId: ObjectId, input: OrdinaryInquery): Promise<Properties> {
+		return await this.likeService.getFavoriteProperties(memberId, input);
 	}
 
 	public async propertyStatsEditor(input: StatisticModifiler): Promise<Property> {

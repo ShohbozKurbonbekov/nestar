@@ -6,6 +6,7 @@ import {
 	AllPropertiesInquiry,
 	PropertyInput,
 	PropertiesInquiry,
+	OrdinaryInquery,
 } from '../../libs/dto/property/property.input';
 import { AuthMember } from '../auth/decorators/authMember.decorator';
 import { ObjectId } from 'mongoose';
@@ -87,6 +88,16 @@ export class PropertyResolver {
 		console.log('Mutation likeTargetProperty');
 		const likeRefId = shapeIntoMongoObjectId(input);
 		return await this.propertyService.likeTargetProperty(memberId, likeRefId);
+	}
+
+	@UseGuards(AuthGuard)
+	@Query(() => Properties)
+	public async getFavorites(
+		@Args('input') input: OrdinaryInquery,
+		@AuthMember('_id') memberId: ObjectId,
+	): Promise<Properties> {
+		console.log('Query getFavorites');
+		return await this.propertyService.getFavorites(memberId, input);
 	}
 
 	// ADMIN
