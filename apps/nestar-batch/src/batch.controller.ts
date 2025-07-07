@@ -14,12 +14,12 @@ export class BatchController {
 	// 	this.logger.debug('Interval Test');
 	// }
 
-	// @Timeout(1000)
-	// handleTimeout() {
-	// 	this.logger.debug('timeout is running here');
-	// }
+	@Timeout(1000)
+	handleTimeout() {
+		this.logger.debug('timeout is running here');
+	}
 
-	@Cron('00 * * * * *', { name: BATCH_ROLLBACK })
+	@Cron('00 00 01 * * *', { name: BATCH_ROLLBACK })
 	public async batchRollback() {
 		try {
 			this.logger['context'] = BATCH_ROLLBACK;
@@ -30,23 +30,23 @@ export class BatchController {
 		}
 	}
 
-	@Cron('20 * * * * *', { name: BATCH_TOP_PROPERTIES })
-	public async batchProperties() {
+	@Cron('20 00 01 * * *', { name: BATCH_TOP_PROPERTIES })
+	public async batchTopProperties() {
 		try {
 			this.logger['context'] = BATCH_TOP_PROPERTIES;
 			this.logger.debug('EXECUTED');
-			await this.BatchService.batchProperties();
+			await this.BatchService.batchTopProperties();
 		} catch (error) {
 			this.logger.error(error);
 		}
 	}
 
-	@Cron('40 * * * * *', { name: BATCH_TOP_AGENTS })
-	public async batchAgents() {
+	@Cron('40 00 01 * * *', { name: BATCH_TOP_AGENTS })
+	public async batchTopAgents() {
 		try {
 			this.logger['context'] = BATCH_TOP_AGENTS;
 			this.logger.debug('EXECUTED');
-			await this.BatchService.batchAgents();
+			await this.BatchService.batchTopAgents();
 		} catch (error) {
 			this.logger.error(error);
 		}
