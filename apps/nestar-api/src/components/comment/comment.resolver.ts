@@ -43,7 +43,7 @@ export class CommentResolver {
 		@Args('input') input: CommentsInquiry,
 		@AuthMember('_id') memberId: ObjectId,
 	): Promise<Comments> {
-		console.log('Query getComments');
+		console.log('Query getComments', input);
 		input.search.commentRefId = shapeIntoMongoObjectId(input.search.commentRefId);
 		const result = await this.commentService.getComments(memberId, input);
 		return result;

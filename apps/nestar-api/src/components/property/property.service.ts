@@ -7,7 +7,7 @@ import {
 	AllPropertiesInquiry,
 	PropertyInput,
 	PropertiesInquiry,
-	OrdinaryInquery,
+	OrdinaryInquiry,
 } from '../../libs/dto/property/property.input';
 import { Properties, Property } from '../../libs/dto/property/property';
 import { Direction, Message } from '../../libs/enums/common.enum';
@@ -317,11 +317,11 @@ export class PropertyService {
 		return result;
 	}
 
-	public async getFavorites(memberId: ObjectId, input: OrdinaryInquery): Promise<Properties> {
+	public async getFavorites(memberId: ObjectId, input: OrdinaryInquiry): Promise<Properties> {
 		return await this.likeService.getFavoriteProperties(memberId, input);
 	}
 
-	public async getVisited(memberId: ObjectId, input: OrdinaryInquery): Promise<Properties> {
+	public async getVisited(memberId: ObjectId, input: OrdinaryInquiry): Promise<Properties> {
 		return await this.viewService.getVisitedProperties(memberId, input);
 	}
 

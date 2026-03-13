@@ -6,7 +6,7 @@ import {
 	AllPropertiesInquiry,
 	PropertyInput,
 	PropertiesInquiry,
-	OrdinaryInquery,
+	OrdinaryInquiry,
 } from '../../libs/dto/property/property.input';
 import { AuthMember } from '../auth/decorators/authMember.decorator';
 import { ObjectId } from 'mongoose';
@@ -93,7 +93,7 @@ export class PropertyResolver {
 	@UseGuards(AuthGuard)
 	@Query(() => Properties)
 	public async getFavorites(
-		@Args('input') input: OrdinaryInquery,
+		@Args('input') input: OrdinaryInquiry,
 		@AuthMember('_id') memberId: ObjectId,
 	): Promise<Properties> {
 		console.log('Query getFavorites');
@@ -103,7 +103,7 @@ export class PropertyResolver {
 	@UseGuards(AuthGuard)
 	@Query(() => Properties)
 	public async getVisited(
-		@Args('input') input: OrdinaryInquery,
+		@Args('input') input: OrdinaryInquiry,
 		@AuthMember('_id') memberId: ObjectId,
 	): Promise<Properties> {
 		console.log('Query: getVisited');

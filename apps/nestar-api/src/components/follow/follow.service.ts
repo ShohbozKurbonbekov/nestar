@@ -23,7 +23,6 @@ export class FollowService {
 	) {}
 
 	public async subscribe(followerId: ObjectId, followingId: ObjectId): Promise<Follower> {
-		console.log(followerId, followingId);
 		if (followerId.toString() === followingId.toString()) {
 			throw new InternalServerErrorException(Message.SELF_SUBSCRIPTION_DENIED);
 		}
@@ -49,6 +48,7 @@ export class FollowService {
 	}
 
 	private async registerSubscription(followerId: ObjectId, followingId: ObjectId): Promise<Follower> {
+		console.log('registerSubscription', followerId, followingId);
 		try {
 			return await this.followModel.create({
 				followingId: followingId,

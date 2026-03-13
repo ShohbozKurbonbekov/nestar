@@ -47,6 +47,10 @@ class AISearch {
 	@IsOptional()
 	@Field(() => String, { nullable: true })
 	text?: string;
+
+	@IsOptional()
+	@Field(() => String, { nullable: true })
+	location?: string;
 }
 
 @InputType()
@@ -63,7 +67,7 @@ export class AgentsInquiry {
 
 	@IsNotEmpty()
 	@Field(() => AISearch)
-	search: AISearch
+	search: AISearch;
 
 	@IsOptional()
 	@IsIn(availableAgentSort)

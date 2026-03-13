@@ -94,26 +94,41 @@ export class MemberService {
 		if (!targetMember) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
 		if (memberId) {
-			const viewInput = { memberId: memberId, viewRefId: targetId, viewGroup: ViewGroup.MEMBER };
-			const newView = await this.viewService.recordView(viewInput);
+			try {
+				console.log('Recording view...');
+				const newView = await this.viewService.recordView({
+					memberId,
+					viewRefId: targetId,
+					viewGroup: ViewGroup.MEMBER,
+				});
+				console.log('View recorded:', newView);
 
-			if (newView) {
-				await this.memberModel.findOneAndUpdate(search, { $inc: { memberViews: 1 } }, { new: true }).exec();
-				targetMember.memberViews++;
+				if (newView) {
+					await this.memberModel.findOneAndUpdate(search, { $inc: { memberViews: 1 } }, { new: true }).exec();
+					targetMember.memberViews++;
+				}
+
+				console.log('Checking like existence...');
+				targetMember.meLiked = await this.likeService.checkLikeExistance({
+					memberId,
+					likeRefId: targetId,
+					likeGroup: LikeGroup.MEMBER,
+				});
+				console.log('Like status:', targetMember.meLiked);
+
+				console.log('Checking subscription...');
+				targetMember.meFollowed = await this.checkSubscription(memberId, targetId);
+				console.log('Follow status:', targetMember.meFollowed);
+			} catch (error) {
+				console.error('Error in logged-in user data augmentation:', error);
 			}
-
-			const likeInput = { memberId: memberId, likeRefId: targetId, likeGroup: LikeGroup.MEMBER };
-
-			targetMember.meLiked = await this.likeService.checkLikeExistance(likeInput);
-
-			targetMember.meFollowed = await this.checkSubscription(memberId, targetId);
 		}
 
 		return targetMember;
 	}
 
 	public async getAgents(memberId: ObjectId, input: AgentsInquiry): Promise<Members> {
-		const { text } = input.search;
+		const { text, location } = input.search;
 		const match: T = {
 			memberType: MemberType.AGENT, //AGENT
 			memberStatus: MemberStatus.ACTIVE, //ACTIVE
@@ -123,8 +138,13 @@ export class MemberService {
 			[input?.sort ?? 'createdAt']: input?.direction ?? Direction.DESC,
 		};
 
-		if (text) match.memberNick = { $regex: new RegExp(text) };
+		if (text) match.memberNick = { $regex: new RegExp(text.trim()) };
 
+		if (location) {
+			match.memberAddress = {
+				$regex: new RegExp(location.trim()),
+			};
+		}
 		const result = await this.memberModel
 			.aggregate([
 				{ $match: match },
@@ -140,7 +160,6 @@ export class MemberService {
 
 		if (!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
-		console.log('result: ', result);
 		return result[0];
 	}
 
