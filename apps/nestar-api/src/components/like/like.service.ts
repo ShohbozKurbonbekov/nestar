@@ -41,14 +41,12 @@ export class LikeService {
 
 	public async checkLikeExistance(input: LikeInput): Promise<MeLiked[]> {
 		const { memberId, likeRefId } = input;
-
 		const result = await this.likeModel
 			.findOne({
-				memberId: memberId,
-				likeRefId: likeRefId,
+				memberId,
+				likeRefId,
 			})
 			.exec();
-
 		return result
 			? [
 					{

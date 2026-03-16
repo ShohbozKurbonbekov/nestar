@@ -31,6 +31,10 @@ export class BoardArticleInput {
 @InputType()
 class BAISearch {
 	@IsOptional()
+	@Field(() => Boolean, { nullable: true })
+	isTrending?: boolean;
+
+	@IsOptional()
 	@Field(() => BoardArticleCategory, { nullable: true })
 	articleCategory?: BoardArticleCategory;
 

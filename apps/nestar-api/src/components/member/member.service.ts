@@ -138,11 +138,15 @@ export class MemberService {
 			[input?.sort ?? 'createdAt']: input?.direction ?? Direction.DESC,
 		};
 
-		if (text) match.memberNick = { $regex: new RegExp(text.trim()) };
+		if (text)
+			match.$or = [
+				{ memberNick: { $regex: new RegExp(text.trim(), 'i') } },
+				{ memberFullName: { $regex: new RegExp(text.trim(), 'i') } },
+			];
 
 		if (location) {
 			match.memberAddress = {
-				$regex: new RegExp(location.trim()),
+				$regex: new RegExp(location.trim(), 'i'),
 			};
 		}
 		const result = await this.memberModel

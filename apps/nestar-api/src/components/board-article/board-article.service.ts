@@ -86,6 +86,7 @@ export class BoardArticleService {
 		}
 
 		targetBoardArticle.memberData = await this.memberService.getMember(null, targetBoardArticle.memberId);
+		targetBoardArticle.meLiked = targetBoardArticle.PropertiesInquiry;
 
 		return targetBoardArticle;
 	}
@@ -113,7 +114,7 @@ export class BoardArticleService {
 	}
 
 	public async getBoardArticles(memberId: ObjectId, input: BoardArticlesInquiry): Promise<BoardArticles> {
-		const { articleCategory, text } = input.search;
+		const { articleCategory, text, isTrending } = input.search;
 		const match: T = {
 			articleStatus: BoardArticleStatus.ACTIVE,
 		};
@@ -130,6 +131,7 @@ export class BoardArticleService {
 		const result = await this.boardArticleModel
 			.aggregate([
 				{ $match: match },
+				...(isTrending ? this.getIsTrending() : []),
 				{ $sort: sort },
 				{
 					$facet: {
@@ -270,5 +272,37 @@ export class BoardArticleService {
 				},
 			)
 			.exec();
+	}
+
+	private getIsTrending() {
+		return [
+			{
+				$addFields: {
+					featuredScore: {
+						$add: [
+							{ $multiply: [{ $ln: { $add: [{ $ifNull: ['$articleComments', 0] }, 1] } }, 0.4] },
+							{ $multiply: [{ $ln: { $add: [{ $ifNull: ['$articleLikes', 0] }, 1] } }, 0.3] },
+							{ $multiply: [{ $ln: { $add: [{ $ifNull: ['$articleViews', 0] }, 1] } }, 0.3] },
+						],
+					},
+					isTrending: {
+						$switch: {
+							branches: [
+								{
+									case: {
+										$gte: ['$featuredScore', 5],
+									},
+									then: true,
+								},
+							],
+							default: false,
+						},
+					},
+				},
+			},
+			{
+				$match: { isTrending: true },
+			},
+		];
 	}
 }

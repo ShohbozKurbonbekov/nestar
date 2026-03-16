@@ -77,7 +77,6 @@ export class BoardArticleResolver {
 	}
 
 	/* ADMIN */
-
 	@Roles(MemberType.ADMIN)
 	@UseGuards(RolesGuard)
 	@Query(() => BoardArticles)
