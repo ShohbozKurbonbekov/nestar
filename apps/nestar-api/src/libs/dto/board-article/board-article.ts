@@ -47,8 +47,8 @@ export class BoardArticle {
 	@Field(() => Member, { nullable: true })
 	memberData?: Member;
 
-	@Field(() => Boolean, { nullable: true })
-	isTrending?: boolean;
+	@Field(() => Number, { nullable: true })
+	featuredScore?: number;
 
 	@Field(() => [MeLiked], { nullable: true })
 	meLiked?: MeLiked[];

@@ -37,7 +37,7 @@ export const lookupMember = {
 	},
 };
 
-export const availableBoardArticleSorts = ['createdAt', 'updatedAt', 'articleLikes', 'articleViews'];
+export const availableBoardArticleSorts = ['createdAt', 'updatedAt', 'articleLikes', 'articleViews', 'featuredScore'];
 
 export const availableCommentSorts = ['createdAt', 'updatedAt'];
 

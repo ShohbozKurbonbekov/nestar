@@ -114,7 +114,7 @@ export class BoardArticleService {
 	}
 
 	public async getBoardArticles(memberId: ObjectId, input: BoardArticlesInquiry): Promise<BoardArticles> {
-		const { articleCategory, text, isTrending } = input.search;
+		const { articleCategory, text, isFeatured } = input?.search ?? {};
 		const match: T = {
 			articleStatus: BoardArticleStatus.ACTIVE,
 		};
@@ -131,7 +131,7 @@ export class BoardArticleService {
 		const result = await this.boardArticleModel
 			.aggregate([
 				{ $match: match },
-				...(isTrending ? this.getIsTrending() : []),
+				...(isFeatured ? this.getIsFeatured() : []),
 				{ $sort: sort },
 				{
 					$facet: {
@@ -274,7 +274,7 @@ export class BoardArticleService {
 			.exec();
 	}
 
-	private getIsTrending() {
+	private getIsFeatured() {
 		return [
 			{
 				$addFields: {
@@ -285,24 +285,9 @@ export class BoardArticleService {
 							{ $multiply: [{ $ln: { $add: [{ $ifNull: ['$articleViews', 0] }, 1] } }, 0.3] },
 						],
 					},
-					isTrending: {
-						$switch: {
-							branches: [
-								{
-									case: {
-										$gte: ['$featuredScore', 5],
-									},
-									then: true,
-								},
-							],
-							default: false,
-						},
-					},
 				},
 			},
-			{
-				$match: { isTrending: true },
-			},
+			{ $match: { featuredScore: { $gte: 5 } } },
 		];
 	}
 }
