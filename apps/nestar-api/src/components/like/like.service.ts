@@ -64,7 +64,7 @@ export class LikeService {
 			likeGroup: LikeGroup.PROPERTY,
 			memberId: memberId,
 		};
-		const data: T = await this.likeModel
+		const [data] = await this.likeModel
 			.aggregate([
 				{
 					$match: match,
@@ -72,6 +72,7 @@ export class LikeService {
 				{
 					$sort: { updatedAt: -1 },
 				},
+
 				{
 					$lookup: {
 						from: 'properties',
@@ -82,6 +83,7 @@ export class LikeService {
 				},
 
 				{ $unwind: '$favoriteProperty' },
+
 				{
 					$facet: {
 						list: [
@@ -90,7 +92,25 @@ export class LikeService {
 							},
 							{ $limit: limit },
 							lookupFavorite,
+
 							{ $unwind: '$favoriteProperty.memberData' },
+							{
+								$addFields: {
+									'favoriteProperty.meLiked': [
+										{
+											memberId: '$memberId',
+											likeRefId: '$likeRefId',
+											myFavorite: true,
+										},
+									],
+								},
+							},
+
+							{
+								$replaceRoot: {
+									newRoot: '$favoriteProperty',
+								},
+							},
 						],
 						metaCounter: [{ $count: 'total' }],
 					},
@@ -98,8 +118,6 @@ export class LikeService {
 			])
 			.exec();
 
-		const result: Properties = { list: [], metaCounter: data[0].metaCounter };
-		result.list = data[0].list.map((el) => el.favoriteProperty);
-		return result;
+		return data;
 	}
 }
