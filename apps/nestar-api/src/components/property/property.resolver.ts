@@ -32,7 +32,7 @@ export class PropertyResolver {
 		@Args('input') input: PropertyInput,
 		@AuthMember('_id') memberId: ObjectId,
 	): Promise<Property> {
-		console.log('Mutation createProperty');
+		console.log('Mutation createProperty---------------------------');
 		input.memberId = memberId;
 		return await this.propertyService.createProperty(input);
 	}

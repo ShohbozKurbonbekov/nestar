@@ -22,8 +22,12 @@ import { SocketModule } from './socket/socket.module';
 				const graphQLFormatedError = {
 					code: error?.extensions?.code,
 					message:
-						error?.extensions.exception?.response?.message || error?.extensions?.response?.message || error?.message,
+						error.extensions?.originalError?.message ||
+						error?.extensions.exception?.response?.message ||
+						error?.extensions?.response?.message ||
+						error?.message,
 				};
+				console.log('klsgnjewgnkjweg------------');
 				console.log('GraphQL Global Error: ', graphQLFormatedError);
 				return graphQLFormatedError;
 			},
