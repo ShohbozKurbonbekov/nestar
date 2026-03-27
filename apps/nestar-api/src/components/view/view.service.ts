@@ -7,7 +7,7 @@ import { T } from '../../libs/types/common';
 import { OrdinaryInquiry } from '../../libs/dto/property/property.input';
 import { Properties } from '../../libs/dto/property/property';
 import { ViewGroup } from '../../libs/enums/view.enum';
-import { lookupVisited } from '../../libs/config';
+import { lookupAuthMemberLiked, lookupVisited } from '../../libs/config';
 
 @Injectable()
 export class ViewService {
@@ -42,7 +42,7 @@ export class ViewService {
 			memberId: memberId,
 		};
 
-		const data: T = await this.viewModel
+		const [data] = await this.viewModel
 			.aggregate([
 				{
 					$match: match,
@@ -74,6 +74,18 @@ export class ViewService {
 							{
 								$unwind: '$visitedProperty.memberData',
 							},
+							lookupAuthMemberLiked(memberId, '$viewRefId'),
+							{
+								$addFields: {
+									'visitedProperty.meLiked': '$meLiked',
+								},
+							},
+
+							{
+								$replaceRoot: {
+									newRoot: '$visitedProperty',
+								},
+							},
 						],
 						metaCounter: [
 							{
@@ -85,12 +97,6 @@ export class ViewService {
 			])
 			.exec();
 
-		const result: Properties = {
-			list: [],
-			metaCounter: data[0].metaCounter,
-		};
-
-		result.list = data[0].list.map((el) => el.visitedProperty);
-		return result;
+		return data;
 	}
 }
