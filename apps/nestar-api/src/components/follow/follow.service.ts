@@ -130,15 +130,13 @@ export class FollowService {
 		return result[0];
 	}
 
-	public async getMemberFollowers(memberId: ObjectId | null, input: FollowInquiry): Promise<Followers> {
+	public async getMemberFollowers(memberId: ObjectId | undefined, input: FollowInquiry): Promise<Followers> {
 		const { page, limit, search } = input;
 		if (!search?.followingId) throw new InternalServerErrorException(Message.BAD_REQUEST);
 
 		const match: T = {
 			followingId: search?.followingId,
 		};
-
-		console.log('match', match);
 
 		const result = await this.followModel
 			.aggregate([
@@ -160,7 +158,7 @@ export class FollowService {
 							lookupAuthMemberLiked(memberId, '$followerId'),
 							lookupAuthMemberFollowed({
 								followerId: memberId,
-								followingId: '$followingId',
+								followingId: '$followerId',
 							}),
 
 							lookupFollowerData,
