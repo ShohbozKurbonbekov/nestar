@@ -18,8 +18,6 @@ import { WithoutGuard } from '../auth/guards/without.guard';
 import { shapeIntoMongoObjectId } from '../../libs/config';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { PropertyUpdate } from '../../libs/dto/property/property.update';
-import { throttleTime } from 'rxjs';
-import { PropertyType } from '../../libs/enums/property.enum';
 
 @Resolver()
 export class PropertyResolver {

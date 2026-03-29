@@ -45,7 +45,7 @@ export class MemberUpdate {
 	memberAddress?: string;
 
 	@IsOptional()
-	@Length(5, 12)
+	@Length(5, 100)
 	@Field(() => String, { nullable: true })
 	memberDesc?: string;
 

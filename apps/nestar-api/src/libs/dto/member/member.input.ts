@@ -12,7 +12,7 @@ export class MemberInput {
 	memberNick: string;
 
 	@IsNotEmpty()
-	@Length(3, 12)
+	@Length(5, 12)
 	@Field(() => String)
 	memberPassword: string;
 

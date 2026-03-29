@@ -82,7 +82,7 @@ export class MemberService {
 
 		return result;
 	}
-	public async getMember(memberId: ObjectId | null, targetId: ObjectId): Promise<Member> {
+	public async getMember(memberId: ObjectId | undefined, targetId: ObjectId): Promise<Member> {
 		const search: T = {
 			_id: targetId,
 			memberStatus: {
@@ -118,7 +118,7 @@ export class MemberService {
 
 				console.log('Checking subscription...');
 				targetMember.meFollowed = await this.checkSubscription(memberId, targetId);
-				console.log('Follow status:', targetMember.meFollowed);
+				console.log('Follow status:', targetMember.meFollowed, '/////////////////////////////////////////////////');
 			} catch (error) {
 				console.error('Error in logged-in user data augmentation:', error);
 			}
@@ -242,7 +242,6 @@ export class MemberService {
 			})
 			.exec();
 
-		if (!result) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 		return result
 			? [
 					{
