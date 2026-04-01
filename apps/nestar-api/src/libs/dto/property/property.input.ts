@@ -209,6 +209,10 @@ export class ALPISearch {
 	@IsOptional()
 	@Field(() => [PropertyLocation], { nullable: true })
 	propertyLocationList?: PropertyLocation;
+
+	@IsOptional()
+	@Field(() => String, { nullable: true })
+	propertyTitle?: string;
 }
 @InputType()
 export class AllPropertiesInquiry {

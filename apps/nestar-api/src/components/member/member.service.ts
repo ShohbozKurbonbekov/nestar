@@ -169,6 +169,7 @@ export class MemberService {
 
 	public async getAllMembersByAdmin(input: MembersInquiry): Promise<Members> {
 		const { text, memberStatus, memberType } = input.search;
+		console.log('STATUS: ', memberStatus);
 		const match: T = {};
 		const sort: T = {
 			[input?.sort ?? 'createdAt']: input?.direction ?? Direction.DESC,
@@ -176,7 +177,6 @@ export class MemberService {
 		if (memberStatus) match.memberStatus = memberStatus;
 		if (memberType) match.memberType = memberType;
 		if (text) match.memberNick = { $regex: new RegExp(text, 'i') };
-
 		const result = await this.memberModel
 			.aggregate([
 				{ $match: match },

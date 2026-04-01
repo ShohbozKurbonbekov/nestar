@@ -212,7 +212,7 @@ export class PropertyService {
 	}
 
 	public async getAllPropertiesByAdmin(input: AllPropertiesInquiry): Promise<Properties> {
-		const { propertyStatus, propertyLocationList } = input.search;
+		const { propertyStatus, propertyLocationList, propertyTitle } = input.search;
 
 		const match: T = {};
 		const sort: T = {
@@ -220,8 +220,9 @@ export class PropertyService {
 		};
 		if (propertyStatus) match.propertyStatus = propertyStatus;
 
-		if (propertyLocationList) match.propertyLocation = { $in: propertyLocationList };
+		if (propertyLocationList && propertyLocationList.length) match.propertyLocation = { $in: propertyLocationList };
 
+		if (propertyTitle) match.propertyTitle = { $regex: new RegExp(propertyTitle.trim(), 'i') };
 		const result = await this.propertyModel
 			.aggregate([
 				{ $match: match },
