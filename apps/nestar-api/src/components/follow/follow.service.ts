@@ -163,7 +163,7 @@ export class FollowService {
 
 							lookupFollowerData,
 							{ $unwind: '$followerData' },
-						],
+						],  
 						metaCounter: [{ $count: 'total' }],
 					},
 				},

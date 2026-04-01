@@ -111,7 +111,7 @@ export class MembersInquiry {
 	search: MISearch;
 
 	@IsOptional()
-	@IsIn([availableMemberSort])
+	@IsIn(availableMemberSort)
 	@Field(() => String, { nullable: true })
 	sort?: string;
 
