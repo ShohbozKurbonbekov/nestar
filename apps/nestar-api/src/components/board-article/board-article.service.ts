@@ -170,7 +170,7 @@ export class BoardArticleService {
 		if (articleStatus) match.articleStatus = articleStatus;
 
 		if (articleCategory) match.articleCategory = articleCategory;
-		if (articleCategory) match.articleTitle = { $regex: new RegExp(articleTitle.trim(), 'i') };
+		if (articleTitle) match.articleTitle = { $regex: new RegExp(articleTitle.trim(), 'i') };
 
 		const result = await this.boardArticleModel
 			.aggregate([

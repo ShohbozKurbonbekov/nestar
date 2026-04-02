@@ -169,7 +169,6 @@ export class MemberService {
 
 	public async getAllMembersByAdmin(input: MembersInquiry): Promise<Members> {
 		const { text, memberStatus, memberType } = input.search;
-		console.log('STATUS: ', memberStatus);
 		const match: T = {};
 		const sort: T = {
 			[input?.sort ?? 'createdAt']: input?.direction ?? Direction.DESC,
