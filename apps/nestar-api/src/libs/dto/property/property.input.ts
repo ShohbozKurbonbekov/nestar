@@ -1,11 +1,9 @@
 import { Field, InputType, Int } from '@nestjs/graphql';
-import { IsEnum, IsIn, IsInt, isNotEmpty, IsNotEmpty, IsOptional, Length, Min } from 'class-validator';
+import { IsEnum, IsIn, IsInt, IsNotEmpty, IsOptional, Length, Min } from 'class-validator';
 import { PropertyLocation, PropertyStatus, PropertyType } from '../../enums/property.enum';
 import { ObjectId } from 'mongoose';
 import { availableOptions, availablePropertySorts } from '../../config';
 import { Direction } from '../../enums/common.enum';
-import { privateDecrypt } from 'node:crypto';
-import { findBreakingChanges } from 'graphql';
 
 @InputType()
 export class PropertyInput {

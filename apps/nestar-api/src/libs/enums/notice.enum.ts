@@ -16,7 +16,9 @@ export enum NoticeVisibility {
 	AGENT = 'AGENT',
 	ADMIN = 'ADMIN',
 }
-
+registerEnumType(NoticeVisibility, {
+	name: 'NoticeVisibility',
+});
 export enum NoticePriority {
 	HIGH = 'HIGH',
 	MEDIUM = 'MEDIUM',
@@ -25,9 +27,7 @@ export enum NoticePriority {
 registerEnumType(NoticePriority, {
 	name: 'NoticePriority',
 });
-registerEnumType(NoticeVisibility, {
-	name: 'NoticeVisibility',
-});
+
 export enum NoticeStatus {
 	HOLD = 'HOLD',
 	ACTIVE = 'ACTIVE',
