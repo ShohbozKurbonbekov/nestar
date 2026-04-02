@@ -253,7 +253,6 @@ export class PropertyService {
 	}
 
 	public async updatePropertyByAdmin(input: PropertyUpdate): Promise<Property> {
-		console.log('input: ', input);
 		let { propertyStatus, soldAt, deletedAt } = input;
 		const search: T = {
 			_id: input._id,
@@ -274,6 +273,7 @@ export class PropertyService {
 				modifier: -1,
 			});
 		}
+
 		return result;
 	}
 

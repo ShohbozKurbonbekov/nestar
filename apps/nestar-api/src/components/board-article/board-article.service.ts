@@ -160,8 +160,7 @@ export class BoardArticleService {
 	}
 
 	public async getAllBoardArticlesByAdmin(input: AllBoardArticlesInquiry): Promise<BoardArticles> {
-		const { articleStatus, articleCategory } = input.search;
-
+		const { articleStatus, articleCategory, articleTitle } = input.search;
 		const match: T = {};
 
 		const sort: T = {
@@ -171,10 +170,12 @@ export class BoardArticleService {
 		if (articleStatus) match.articleStatus = articleStatus;
 
 		if (articleCategory) match.articleCategory = articleCategory;
+		if (articleCategory) match.articleTitle = { $regex: new RegExp(articleTitle.trim(), 'i') };
 
 		const result = await this.boardArticleModel
 			.aggregate([
 				{ $match: match },
+				...(input.sort === 'featuredScore' ? this.getIsFeatured() : []),
 				{ $sort: sort },
 				{
 					$facet: {
@@ -220,10 +221,12 @@ export class BoardArticleService {
 	public async removeBoardArticleByAdmin(articleId: ObjectId): Promise<BoardArticle> {
 		const search: T = {
 			_id: articleId,
-			articleStatus: BoardArticleStatus.DELETE,
+			articleStatus: BoardArticleStatus.ACTIVE,
 		};
 
-		const result = await this.boardArticleModel.findOneAndDelete(search).exec();
+		const result = await this.boardArticleModel
+			.findOneAndUpdate(search, { articleStatus: BoardArticleStatus.DELETE }, { new: true })
+			.exec();
 
 		if (!result) {
 			throw new InternalServerErrorException(Message.REMOVE_FAILED);
