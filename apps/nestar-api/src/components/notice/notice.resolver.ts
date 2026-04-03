@@ -33,6 +33,12 @@ export class NoticeResolver {
 		return await this.noticeService.getNotice(targetId);
 	}
 
+	@UseGuards(WithoutGuard)
+	@Query(() => Notices)
+	public async getNotices(@Args('input') input: NoticesInquiry): Promise<Notices> {
+		console.log('Query: getNotices');
+		return await this.noticeService.getNotices(input);
+	}
 	@Roles(MemberType.ADMIN)
 	@UseGuards(RolesGuard)
 	@Query(() => Notices)

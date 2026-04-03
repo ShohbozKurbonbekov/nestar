@@ -34,6 +34,42 @@ export class NoticeService {
 		}
 	}
 
+	public async getNotices(input: NoticesInquiry): Promise<Notices> {
+		const standartSorting: Record<string, string> = {
+			[NoticeSort.NEWEST]: 'createdAt',
+			[NoticeSort.UPDATED]: 'updatedAt',
+			[NoticeSort.OLDEST]: 'createdAt',
+		};
+		const { noticeCategory, noticeTitle } = input.search;
+		const match: T = {};
+		const sort: T = {
+			[standartSorting[input?.sort] ?? 'createdAt']: input?.direction ?? Direction.DESC,
+		};
+		if (noticeCategory) match.noticeCategory = noticeCategory;
+		if (noticeTitle) match.noticeTitle = { $regex: new RegExp(noticeTitle.trim(), 'i') };
+		const result = await this.noticeModel
+			.aggregate([
+				{ $match: match },
+				{ $sort: sort },
+				{
+					$facet: {
+						list: [{ $skip: (input.page - 1) * input.limit }, { $limit: input.limit }],
+
+						metaCounter: [
+							{
+								$count: 'total',
+							},
+						],
+					},
+				},
+			])
+			.exec();
+
+		if (!result) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+
+		return result[0];
+	}
+
 	public async getNoticesByAdmin(input: NoticesInquiry): Promise<Notices> {
 		const standartSorting: Record<string, string> = {
 			[NoticeSort.NEWEST]: 'createdAt',
