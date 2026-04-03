@@ -7,7 +7,7 @@ import { MemberService } from '../member/member.service';
 import { shapeIntoMongoObjectId } from '../../libs/config';
 import { Direction, Message } from '../../libs/enums/common.enum';
 import { T } from '../../libs/types/common';
-import { NoticeSort } from '../../libs/enums/notice.enum';
+import { NoticeSort, NoticeStatus } from '../../libs/enums/notice.enum';
 import { NoticeUpdate } from '../../libs/dto/notice/notice.update';
 
 @Injectable()
@@ -73,9 +73,26 @@ export class NoticeService {
 	}
 
 	public async updateNoticeByAdmin(input: NoticeUpdate): Promise<Notice> {
-		const result = await this.noticeModel.findOneAndUpdate({ _id: input._id }, input, { new: true }).exec();
+		const result = await this.noticeModel
+			.findOneAndUpdate({ _id: shapeIntoMongoObjectId(input._id) }, input, { new: true })
+			.exec();
 
 		if (!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
+		return result;
+	}
+
+	public async getNotice(input: string): Promise<Notice> {
+		const match: T = {
+			_id: input,
+			noticeStatus: NoticeStatus.ACTIVE,
+		};
+
+		const result = await this.noticeModel.findOne(match).lean().exec();
+
+		if (!result) {
+			throw new BadRequestException(Message.WRONG_STATUS);
+		}
+
 		return result;
 	}
 }

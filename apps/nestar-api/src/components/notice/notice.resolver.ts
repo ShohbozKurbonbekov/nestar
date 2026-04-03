@@ -10,6 +10,7 @@ import { AuthMember } from '../auth/decorators/authMember.decorator';
 import { ObjectId } from 'mongoose';
 import { shapeIntoMongoObjectId } from '../../libs/config';
 import { NoticeUpdate } from '../../libs/dto/notice/notice.update';
+import { WithoutGuard } from '../auth/guards/without.guard';
 
 @Resolver()
 export class NoticeResolver {
@@ -22,6 +23,14 @@ export class NoticeResolver {
 		console.log('Mutation createNotice---------------------------');
 		input.memberId = shapeIntoMongoObjectId(memberId);
 		return await this.noticeService.createNotice(input);
+	}
+
+	@UseGuards(WithoutGuard)
+	@Query(() => Notice)
+	public async getNotice(@Args('noticeId') input: string): Promise<Notice> {
+		const targetId = shapeIntoMongoObjectId(input);
+		console.log('Query: getNotice');
+		return await this.noticeService.getNotice(targetId);
 	}
 
 	@Roles(MemberType.ADMIN)

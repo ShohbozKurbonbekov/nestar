@@ -20,6 +20,7 @@ export enum Message {
 	PROVIDE_ALLOWED_FORMAT = 'Please provide jpeg or png images!',
 	SELF_SUBSCRIPTION_DENIED = 'Self subscription is denied',
 	UPLOAD = 'UPLOAD',
+	WRONG_STATUS = 'Please Check status, it should be (ACTIVE) if you want to edit',
 }
 
 export enum Direction {
