@@ -64,7 +64,7 @@ export class NoticesInquiry {
 	limit: number;
 
 	@IsOptional()
-	@IsIn([Object.keys(NoticeSort)])
+	@IsIn([...Object.keys(NoticeSort)])
 	@Field(() => String, { nullable: true })
 	sort?: string;
 
