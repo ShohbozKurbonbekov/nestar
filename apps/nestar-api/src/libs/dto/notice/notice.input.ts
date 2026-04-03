@@ -1,8 +1,9 @@
-import { Field, InputType } from '@nestjs/graphql';
-import { NoticeCategory, NoticePriority, NoticeStatus, NoticeVisibility } from '../../enums/notice.enum';
-import { IsNotEmpty, Length } from 'class-validator';
+import { Field, InputType, Int } from '@nestjs/graphql';
+import { NoticeCategory, NoticePriority, NoticeSort, NoticeStatus, NoticeVisibility } from '../../enums/notice.enum';
+import { IsIn, IsNotEmpty, IsOptional, Length, Min } from 'class-validator';
 import { Optional } from '@nestjs/common';
 import { ObjectId } from 'mongoose';
+import { Direction } from '../../enums/common.enum';
 
 @InputType()
 export class NoticeInput {
@@ -29,4 +30,49 @@ export class NoticeInput {
 	noticePriority?: NoticePriority;
 
 	memberId: ObjectId;
+}
+
+@InputType()
+export class ALNISearchInput {
+	@IsOptional()
+	@Field(() => String, { nullable: true })
+	noticeTitle?: string;
+
+	@IsOptional()
+	@Field(() => NoticeCategory, { nullable: true })
+	noticeCategory?: NoticeCategory;
+
+	@IsOptional()
+	@Field(() => NoticeVisibility, { nullable: true })
+	noticeVisibility?: NoticeVisibility;
+
+	@IsOptional()
+	@Field(() => NoticeStatus, { nullable: true })
+	noticeStatus?: NoticeStatus;
+}
+
+@InputType()
+export class NoticesInquiry {
+	@IsNotEmpty()
+	@Min(1)
+	@Field(() => Int)
+	page: number;
+
+	@IsNotEmpty()
+	@Min(1)
+	@Field(() => Int)
+	limit: number;
+
+	@IsOptional()
+	@IsIn([Object.keys(NoticeSort)])
+	@Field(() => String, { nullable: true })
+	sort?: string;
+
+	@IsOptional()
+	@Field(() => Direction, { nullable: true })
+	direction?: Direction;
+
+	@IsNotEmpty()
+	@Field(() => ALNISearchInput)
+	search: ALNISearchInput;
 }

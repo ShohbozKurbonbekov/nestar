@@ -36,3 +36,12 @@ export enum NoticeStatus {
 registerEnumType(NoticeStatus, {
 	name: 'NoticeStatus',
 });
+
+export enum NoticeSort {
+	NEWEST = 'NEWEST',
+	OLDEST = 'OLDEST',
+	UPDATED = 'UPDATED',
+}
+registerEnumType(NoticeSort, {
+	name: 'NoticeSort',
+});

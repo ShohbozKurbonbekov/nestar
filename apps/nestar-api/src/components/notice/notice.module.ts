@@ -4,6 +4,7 @@ import { NoticeResolver } from './notice.resolver';
 import { NoticeService } from './notice.service';
 import NoticeSchema from '../../schemas/Notice.model';
 import { MemberModule } from '../member/member.module';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
 	imports: [
@@ -14,6 +15,7 @@ import { MemberModule } from '../member/member.module';
 			},
 		]),
 		MemberModule,
+		AuthModule,
 	],
 	providers: [NoticeResolver, NoticeService],
 })
