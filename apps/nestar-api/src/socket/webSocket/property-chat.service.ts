@@ -4,9 +4,9 @@ import { Model } from 'mongoose';
 
 @Injectable()
 export class PropertyChatService {
-	constructor(@InjectModel('propertyMessages') private readonly messageModel: Model<any>) {}
+	constructor(@InjectModel('ChatMessage') private readonly chatMessageModel: Model<any>) {}
 
 	async createMessage(input: any) {
-		return await this.messageModel.create(input);
+		return await this.chatMessageModel.create(input);
 	}
 }
