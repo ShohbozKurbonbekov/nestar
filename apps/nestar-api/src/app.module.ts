@@ -8,7 +8,7 @@ import { AppResolver } from './app.resolver';
 import { ComponentsModule } from './components/components.module';
 import { DatabaseModule } from './database/database.module';
 import { T } from './libs/types/common';
-import { SocketModule } from './socket/socket.module';
+import { ChatModule } from './socket/webSocket/chat.module';
 
 @Module({
 	imports: [
@@ -22,19 +22,15 @@ import { SocketModule } from './socket/socket.module';
 				const graphQLFormatedError = {
 					code: error?.extensions?.code,
 					message:
-						error.extensions?.originalError?.message ||
-						error?.extensions.exception?.response?.message ||
-						error?.extensions?.response?.message ||
-						error?.message,
+						error?.extensions.exception?.response?.message || error?.extensions?.response?.message || error?.message,
 				};
-				console.log('klsgnjewgnkjweg------------');
 				console.log('GraphQL Global Error: ', graphQLFormatedError);
 				return graphQLFormatedError;
 			},
 		}),
 		ComponentsModule,
 		DatabaseModule,
-		SocketModule,
+		ChatModule,
 	],
 	controllers: [AppController],
 	providers: [AppService, AppResolver],
