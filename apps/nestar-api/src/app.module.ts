@@ -8,7 +8,6 @@ import { AppResolver } from './app.resolver';
 import { ComponentsModule } from './components/components.module';
 import { DatabaseModule } from './database/database.module';
 import { T } from './libs/types/common';
-import { ChatModule } from './socket/webSocket/chat.module';
 
 @Module({
 	imports: [
@@ -30,7 +29,6 @@ import { ChatModule } from './socket/webSocket/chat.module';
 		}),
 		ComponentsModule,
 		DatabaseModule,
-		ChatModule,
 	],
 	controllers: [AppController],
 	providers: [AppService, AppResolver],

@@ -1,7 +1,7 @@
 import { registerEnumType } from '@nestjs/graphql';
 
 export enum ConversationGroupType {
-	PUBLIC_AGENT = 'USER_AGENT',
+	PUBLIC_AGENT = 'PUBLIC_AGENT',
 	PUBLIC_ADMIN = 'PUBLIC_ADMIN',
 }
 registerEnumType(ConversationGroupType, { name: 'ConversationGroupType' });

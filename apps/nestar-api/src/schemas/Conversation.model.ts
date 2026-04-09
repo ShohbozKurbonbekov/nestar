@@ -5,10 +5,8 @@ const ConversationSchema = new Schema(
 	{
 		targetId: {
 			type: Schema.Types.ObjectId,
-			required: true,
-			ref: 'properties',
 		},
-		converstationStatus: {
+		conversationStatus: {
 			type: String,
 			enum: ConversationStatus,
 			default: ConversationStatus.ACTIVE,
@@ -27,7 +25,6 @@ const ConversationSchema = new Schema(
 
 		targetOwnerId: {
 			type: Schema.Types.ObjectId,
-			required: true,
 			ref: 'members',
 		},
 
@@ -51,5 +48,11 @@ const ConversationSchema = new Schema(
 	},
 	{ timestamps: true, collection: 'Conversation' },
 );
+
+ConversationSchema.index({
+	userId: 1,
+	targetId: 1,
+	conversationGroupType: 1,
+});
 
 export default ConversationSchema;

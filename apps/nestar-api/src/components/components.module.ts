@@ -8,8 +8,24 @@ import { LikeModule } from './like/like.module';
 import { FollowModule } from './follow/follow.module';
 import { BoardArticleModule } from './board-article/board-article.module';
 import { NoticeModule } from './notice/notice.module';
+import { MessageModule } from './chat/message/message.module';
+import { ConversationModule } from './chat/conversation/conversation.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
-  imports: [MemberModule, PropertyModule, AuthModule, CommentModule, ViewModule, LikeModule, FollowModule, BoardArticleModule, NoticeModule]
+	imports: [
+		MemberModule,
+		PropertyModule,
+		AuthModule,
+		CommentModule,
+		ViewModule,
+		LikeModule,
+		FollowModule,
+		BoardArticleModule,
+		NoticeModule,
+		MessageModule,
+		ConversationModule,
+		ChatModule,
+	],
 })
 export class ComponentsModule {}
