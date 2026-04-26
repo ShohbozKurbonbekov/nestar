@@ -3,51 +3,37 @@ import { ChatGroupType, ChatMessageStatus, ChatMessageType } from '../libs/enums
 
 const ChatMessageSchema = new Schema(
 	{
-		conversationId: {
-			type: Schema.Types.ObjectId,
-			required: true,
-			ref: 'Conversation',
-		},
-
-		chatGroupType: {
-			type: String,
-			enum: ChatGroupType,
-			required: true,
-		},
-
-		senderId: {
+		userId: {
 			type: Schema.Types.ObjectId,
 			required: true,
 			ref: 'members',
-		},
-
-		receiverId: {
-			type: Schema.Types.ObjectId,
-			required: true,
-			ref: 'members',
-		},
-
-		message: {
-			type: String,
-			required: true,
-		},
-
-		isRead: {
-			type: Boolean,
-			default: false,
 		},
 		messageStatus: {
 			type: String,
 			enum: ChatMessageStatus,
 			default: ChatMessageStatus.ACTIVE,
 		},
-		messageType: {
+
+		messageReportedBy: {
+			type: [Schema.Types.ObjectId],
+			default: [],
+		},
+
+		message: {
 			type: String,
-			enum: ChatMessageType,
 			required: true,
+		},
+		messageReports: {
+			type: Number,
+			default: 0,
 		},
 	},
 	{ timestamps: true, collection: 'chatMessage' },
 );
+
+ChatMessageSchema.index({
+	messageStatus: 1,
+	userId: 1,
+});
 
 export default ChatMessageSchema;

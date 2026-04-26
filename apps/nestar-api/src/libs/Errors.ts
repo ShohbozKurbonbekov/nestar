@@ -27,6 +27,9 @@ export enum Message {
 	DISCONNECT_ERROR = 'Disconnect error',
 	ERROR_LOGOUT = 'Error in logout',
 	PRESENCE_CHECK_FAILED = 'Presence check failed!',
+	CONVERSATION_NOT_FOUND = 'Conversation is not found!',
+	MESSAGE_SEND_FAILED = 'Message sending failed!',
+	MORE_MESSAGES_FAILED = 'Error in getting more messages!',
 }
 
 class Errors extends Error {

@@ -7,10 +7,12 @@ import {
 	MessageBody,
 	ConnectedSocket,
 } from '@nestjs/websockets';
+
 import { Server, Socket } from 'socket.io';
 import { AuthService } from '../auth/auth.service';
 import Errors, { HttpCode, Message } from '../../libs/Errors';
-import { T } from '../../libs/types/common';
+import { MessageService } from './message/message.service';
+import { Member } from '../../libs/dto/member/member';
 
 @WebSocketGateway(3006, {
 	cors: {
@@ -18,57 +20,108 @@ import { T } from '../../libs/types/common';
 	},
 })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
-	constructor(private readonly authService: AuthService) {}
+	constructor(
+		private readonly authService: AuthService,
+		private readonly messageService: MessageService,
+	) {}
+
 	@WebSocketServer()
 	server: Server;
 
 	// userId -> socketIds[]
 	private onlineUsers = new Map<string, Set<string>>();
+	private socketToUser = new Map<string, string>();
 
-	handleConnection(client: Socket) {
-		console.log('Client connected:', client.id);
-	}
-
-	handleDisconnect(client: Socket) {
+	async handleConnection(client: Socket) {
 		try {
-			for (const [userId, sockets] of this.onlineUsers.entries()) {
-				if (sockets.has(client.id)) {
-					sockets.delete(client.id);
+			const token = client.handshake.auth?.token;
 
-					if (sockets.size === 0) {
-						this.onlineUsers.delete(userId);
-					}
-
-					this.server.emit('presence:update', {
-						userId,
-						status: 'offline',
-					});
-				}
+			if (!token) {
+				throw new Errors(HttpCode.UNAUTHORIZED, Message.NOT_AUTHENTICATED);
 			}
 
-			console.log('Client disconnected:', client.id);
-		} catch (error) {
-			console.log('Error in handleDisconnect: ', error);
-			this.sendError(client, new Errors(HttpCode.BAD_REQUEST, Message.DISCONNECT_ERROR));
-		}
-	}
-
-	@SubscribeMessage('user:online')
-	async handleUserOnline(@MessageBody() token: string, @ConnectedSocket() client: Socket) {
-		try {
-			const user = await this.authService.verifyToken(token);
+			const user: Member = await this.authService.verifyToken(token);
 			const userId = String(user._id);
+
+			client.data.user = user;
+
 			if (!this.onlineUsers.has(userId)) {
 				this.onlineUsers.set(userId, new Set());
 			}
 
-			this.onlineUsers.get(userId)?.add(client.id);
+			this.onlineUsers.get(userId).add(client.id);
+			this.socketToUser.set(client.id, userId);
 
-			this.server.emit('presence:update', { userId, status: Boolean(userId) ? 'online' : 'offline' });
-			console.log('User online: ', userId);
+			const isFirstConnection = this.onlineUsers.get(userId).size === 1;
+
+			const { messages, hasMore } = await this.messageService.getMessages({});
+
+			client.emit('chat:init', {
+				messages,
+				hasMore,
+			});
+
+			if (isFirstConnection) {
+				this.server.emit('system:join', {
+					user: {
+						id: userId,
+						nick: user.memberNick,
+					},
+					message: `${user.memberNick} joined the chat`,
+				});
+				console.log(`${user.memberNick} connected. Total online: ${this.onlineUsers.size}`);
+				// ---- BROADCAST PRESENCE UPDATE ----
+				this.server.emit('presence:update', {
+					totalOnlineUsers: this.onlineUsers.size,
+				});
+			}
 		} catch (error) {
-			console.log('Error  in handleUserOnline: ', error);
-			this.sendError(client, new Errors(HttpCode.BAD_REQUEST, Message.USER_ONLINE_ERROR));
+			console.log('Error in handleConnection:', error);
+
+			if (error instanceof Errors) {
+				this.sendError(client, { code: error?.code, message: error?.message });
+			} else {
+				this.sendError(client, {
+					code: Errors.standart.code,
+					message: Errors.standart.message,
+				});
+			}
+
+			client.disconnect();
+		}
+	}
+
+	handleDisconnect(client: Socket) {
+		try {
+			const userId = this.socketToUser.get(client.id);
+			if (!userId) return;
+
+			const sockets = this.onlineUsers.get(userId);
+			if (!sockets) return;
+
+			sockets.delete(client.id);
+
+			this.socketToUser.delete(client.id);
+
+			const isFullyDisconnected = sockets.size === 0;
+
+			if (isFullyDisconnected) {
+				this.onlineUsers.delete(userId);
+
+				this.server.emit('system:leave', {
+					user: { id: userId, nick: client.data.user?.memberNick },
+					message: `${client.data.user?.memberNick} left the chat`,
+				});
+
+				console.log('Client disconnected:', client.id);
+			}
+
+			this.server.emit('presence:update', {
+				totalOnlineUsers: this.onlineUsers.size,
+			});
+		} catch (error) {
+			console.log('Error in handleDisconnect: ', error);
+			this.sendError(client, new Errors(HttpCode.BAD_REQUEST, Message.DISCONNECT_ERROR));
 		}
 	}
 
@@ -76,57 +129,40 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		client.emit('chat:error', message);
 	}
 
-	@SubscribeMessage('user:authenticate')
-	async handleAuthenticate(@MessageBody() token: string, @ConnectedSocket() client: Socket) {
+	@SubscribeMessage('message:send')
+	async sendMessage(@MessageBody() body, @ConnectedSocket() client: Socket) {
 		try {
-			const user = await this.authService.verifyToken(token);
-			const userId = String(user._id);
-			if (!this.onlineUsers.has(userId)) {
-				this.onlineUsers.set(userId, new Set());
-			}
+			const user = client.data.user;
 
-			this.onlineUsers.get(userId)?.add(client.id);
-			console.log('User authenticated: ', userId);
-			client.emit('presence:update', { userId, status: Boolean(userId) ? 'online' : 'offline' });
+			const message = await this.messageService.createMessage({
+				userId: user._id,
+				message: body.message,
+			});
+
+			this.server.emit('message:new', message);
 		} catch (error) {
-			console.log('Error in handleAuthenticate: ', error);
-			this.sendError(client, new Errors(HttpCode.UNAUTHORIZED, Message.NOT_AUTHENTICATED));
+			if (error instanceof Errors) {
+				this.sendError(client, { code: error.code, message: error.message });
+			} else {
+				this.sendError(client, { code: Errors.standart.code, message: Errors.standart.message });
+			}
 		}
 	}
 
-	@SubscribeMessage('user:logout')
-	async handleLogout(@MessageBody() token: string, @ConnectedSocket() client: Socket) {
+	@SubscribeMessage('message:loadMore')
+	async loadMore(@MessageBody() body, @ConnectedSocket() client: Socket) {
 		try {
-			const user = await this.authService.verifyToken(token);
-			const userId = String(user._id);
-			const sockets = this.onlineUsers.get(userId);
-			if (sockets) {
-				sockets.delete(client.id);
+			const { before } = body;
 
-				if (sockets.size === 0) {
-					this.onlineUsers.delete(userId);
-				}
-			}
+			const { messages, hasMore } = await this.messageService.getMessages({ before });
 
-			client.emit('presence:update', { userId, status: 'offline' });
-			console.log('User logout: ', userId);
-		} catch (error) {
-			console.log('Error in handleLogout: ', error);
-			this.sendError(client, new Errors(HttpCode.BAD_REQUEST, Message.ERROR_LOGOUT));
-		}
-	}
-
-	@SubscribeMessage('presence:check')
-	handlePresenceCheck(@MessageBody() userId: string, @ConnectedSocket() client: Socket) {
-		try {
-			const isOnline = this.onlineUsers.has(userId);
-			client.emit('presence:update', {
-				userId,
-				status: isOnline ? 'online' : 'offline',
+			client.emit('message:older', {
+				messages,
+				hasMore,
 			});
 		} catch (error) {
-			console.log('Error in handlePresenceCheck: ', error);
-			this.sendError(client, new Errors(HttpCode.BAD_REQUEST, Message.PRESENCE_CHECK_FAILED));
+			console.log('Error in loadMore');
+			this.sendError(client, { code: HttpCode.BAD_REQUEST, message: Message.MORE_MESSAGES_FAILED });
 		}
 	}
 }

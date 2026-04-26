@@ -9,7 +9,6 @@ import { FollowModule } from './follow/follow.module';
 import { BoardArticleModule } from './board-article/board-article.module';
 import { NoticeModule } from './notice/notice.module';
 import { MessageModule } from './chat/message/message.module';
-import { ConversationModule } from './chat/conversation/conversation.module';
 import { ChatModule } from './chat/chat.module';
 
 @Module({
@@ -24,7 +23,6 @@ import { ChatModule } from './chat/chat.module';
 		BoardArticleModule,
 		NoticeModule,
 		MessageModule,
-		ConversationModule,
 		ChatModule,
 	],
 })
