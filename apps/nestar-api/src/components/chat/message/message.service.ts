@@ -1,11 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { shapeIntoMongoObjectId } from 'apps/nestar-api/src/libs/config';
-import { ChatMessageStatus } from 'apps/nestar-api/src/libs/enums/chat.enum';
-import Errors, { HttpCode, Message } from 'apps/nestar-api/src/libs/Errors';
-import { T } from 'apps/nestar-api/src/libs/types/common';
-import { ChatMessage, Messages, MessagesInput } from 'apps/nestar-api/src/libs/types/message';
 import { Model, ObjectId, Types } from 'mongoose';
+import Errors, { HttpCode, Message } from '../../../libs/Errors';
+import { ChatMessage, Messages, MessagesInput } from '../../../libs/types/message';
+import { T } from '../../../libs/types/common';
 
 @Injectable()
 export class MessageService {

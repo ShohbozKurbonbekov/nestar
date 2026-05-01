@@ -30,6 +30,8 @@ export enum Message {
 	CONVERSATION_NOT_FOUND = 'Conversation is not found!',
 	MESSAGE_SEND_FAILED = 'Message sending failed!',
 	MORE_MESSAGES_FAILED = 'Error in getting more messages!',
+	TOKEN_NOT_EXIST = 'TOKEN_NOT_EXIST',
+	ONLY_SPECIFIC_ROLES_ALLOWED = 'ONLY_SPECIFIC_ROLES_ALLOWED',
 }
 
 class Errors extends Error {

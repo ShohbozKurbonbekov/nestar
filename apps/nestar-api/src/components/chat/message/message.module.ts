@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MessageService } from './message.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import ChatMessageSchema from 'apps/nestar-api/src/schemas/ChatMessage.model';
+import ChatMessageSchema from '../../../schemas/ChatMessage.model';
 
 @Module({
 	imports: [
