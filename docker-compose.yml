@@ -7,6 +7,8 @@ services:
     image: node:20.10.0
     ports:
       - 4000:3007
+      - 3006:3006
+
     volumes:
       - ./:/usr/src/nestar
     working_dir: /usr/src/nestar
@@ -28,7 +30,7 @@ services:
     networks:
       - nestar_network
 
-    command: bash -c "npm install && npm run build && npm run start:dev:batch"
+    command: bash -c "npm install && npm run build && npm run start:prod:batch"
 
 networks:
   nestar_network:
