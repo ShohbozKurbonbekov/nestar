@@ -70,11 +70,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 					message: `${user.memberNick} joined the chat`,
 				});
 				console.log(`${user.memberNick} connected. Total online: ${this.onlineUsers.size}`);
-				// ---- BROADCAST PRESENCE UPDATE ----
-				this.server.emit('presence:update', {
-					totalOnlineUsers: this.onlineUsers.size,
-				});
 			}
+			// ---- BROADCAST PRESENCE UPDATE ----
+			this.server.emit('presence:update', {
+				totalOnlineUsers: this.onlineUsers.size,
+			});
 		} catch (error) {
 			console.log('Error in handleConnection:', error);
 
